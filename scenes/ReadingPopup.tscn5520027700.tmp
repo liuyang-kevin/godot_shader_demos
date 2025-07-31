@@ -1,0 +1,168 @@
+[gd_scene load_steps=2 format=3 uid="uid://d3w4p66mbcoyv"]
+
+[sub_resource type="GDScript" id="GDScript_fufju"]
+script/source = "extends Control
+
+@onready var close_button: Button = $HBoxContainer/CloseButton
+
+@export var auto_close_delay: float = 2.0
+@export var file_path: String = \"res://text/sample.txt\"
+
+var _auto_close_timer: Timer
+var _popup_time := 0.0
+var _mouse_moved := false
+const MOUSE_CANCEL_THRESHOLD := 0.3  # 秒数，弹出 0.3 秒后再接受鼠标移动取消
+var _countdown_active := false
+
+
+func _ready():
+	# 居中显示
+	anchor_left = 0.5
+	anchor_top = 0.5
+	anchor_right = 0.5
+	anchor_bottom = 0.5
+	offset_left = -200
+	offset_top = -150
+	offset_right = 200
+	offset_bottom = 150
+	visible = false
+
+	# 添加自动关闭 Timer
+	_auto_close_timer = Timer.new()
+	_auto_close_timer.wait_time = auto_close_delay
+	_auto_close_timer.one_shot = true
+	_auto_close_timer.connect(\"timeout\", Callable(self, \"_on_auto_close_timeout\"))
+	add_child(_auto_close_timer)
+
+	# 捕捉鼠标移动
+	set_process_input(true)
+
+func _process(delta):
+	if _countdown_active:
+		var elapsed = Time.get_ticks_msec() / 1000.0 - _popup_time
+		var remaining = max(auto_close_delay - elapsed, 0.0)
+		close_button.text = \"关闭 (%.1f秒)\" % remaining
+
+func show_popup():
+	visible = true
+	_popup_time = Time.get_ticks_msec() / 1000.0
+	_mouse_moved = false
+	_countdown_active = true
+	_auto_close_timer.start()
+	_load_text()
+
+func _on_auto_close_timeout():
+	if not _mouse_moved:
+		hide()
+
+func _input(event):
+	if event is InputEventMouseMotion:
+		var now = Time.get_ticks_msec() / 1000.0
+		if now - _popup_time > 0.3 and !_mouse_moved:
+			_mouse_moved = true
+			_auto_close_timer.stop()
+			_countdown_active = false
+			close_button.text = \"关闭\"
+
+func _load_text():
+	var f = FileAccess.open(file_path, FileAccess.READ)
+	if f:
+		var content = f.get_as_text()
+		var label = $Panel/RichTextLabel
+		label.clear()
+		label.append_text(content)
+		f.close()
+	else:
+		push_error(\"无法读取文件: %s\" % file_path)
+
+
+func _on_close_button_pressed() -> void:
+	hide()
+	
+	
+	
+	
+	
+func markdown_to_bbcode(markdown_text: String) -> String:
+	var text := markdown_text.strip_edges()
+
+	# --- 转换顺序很重要 ---
+
+	# 1. 转换行内代码块: `code` → [code]code[/code]
+	var code_inline = RegEx.new()
+	code_inline.compile(r\"`([^`\\n]+)`\")
+	text = code_inline.sub(text, \"[code]\\\\1[/code]\", true)
+
+	# 2. 转换链接: [text](url) → [url=url]text[/url]
+	var link_regex = RegEx.new()
+	link_regex.compile(r\"\\[([^\\]]+)\\]\\(([^)]+)\\)\")
+	text = link_regex.sub(text, \"[url=\\\\2]\\\\1[/url]\", true)
+
+	# 3. 转换粗体: **text** → [b]text[/b]
+	var bold_regex = RegEx.new()
+	bold_regex.compile(r\"\\*\\*(.+?)\\*\\*\")
+	text = bold_regex.sub(text, \"[b]\\\\1[/b]\", true)
+
+	# 4. 转换斜体: *text* → [i]text[/i]（注意避免嵌套粗体）
+	var italic_regex = RegEx.new()
+	italic_regex.compile(r\"(?<!\\*)\\*(?!\\*)(.+?)(?<!\\*)\\*(?!\\*)\") # 匹配非 ** 粗体的 *
+	text = italic_regex.sub(text, \"[i]\\\\1[/i]\", true)
+
+	# 5. 转换标题: # Title → [b][u]Title[/u][/b]
+	var lines := text.split(\"\\n\")
+	for i in range(lines.size()):
+		var line = lines[i].strip_edges()
+		if line.begins_with(\"# \"):
+			var title = line.substr(2)
+			lines[i] = \"[b][u]%s[/u][/b]\" % title
+		elif line.begins_with(\"- \"):  # 无序列表 → 添加符号
+			lines[i] = \"• \" + line.substr(2)
+		elif line == \"---\":  # 水平线 → 分隔符
+			lines[i] = \"──────────\"
+
+	text = \"\\n\".join(lines)
+
+	return text
+"
+
+[node name="ReadingPopup" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_fufju")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -31.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 2
+
+[node name="CloseButton" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "关闭"
+
+[connection signal="pressed" from="HBoxContainer/CloseButton" to="." method="_on_close_button_pressed"]
