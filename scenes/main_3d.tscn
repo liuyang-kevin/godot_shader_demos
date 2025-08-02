@@ -1,0 +1,70 @@
+[gd_scene load_steps=9 format=3 uid="uid://vlafacj4gowa"]
+
+[ext_resource type="Script" uid="uid://bxjwhtpigidpw" path="res://scenes/main_3d.gd" id="1_kefov"]
+[ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://scenes/proto_controller/proto_controller.tscn" id="1_m7dbh"]
+[ext_resource type="Shader" uid="uid://bxuvh136y8yxs" path="res://shaders/3d_stylized/3D_遮挡抖动.gdshader" id="2_kefov"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_67ruw"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_m7dbh"]
+sky_material = SubResource("ProceduralSkyMaterial_67ruw")
+
+[sub_resource type="Environment" id="Environment_3s264"]
+background_mode = 2
+sky = SubResource("Sky_m7dbh")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kefov"]
+albedo_color = Color(0.458405, 0.458405, 0.458405, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mt54i"]
+render_priority = 0
+shader = ExtResource("2_kefov")
+shader_parameter/fade_inner_radius = 1.0
+shader_parameter/fade_outer_radius = 3.0
+
+[node name="Main3d" type="Node3D"]
+script = ExtResource("1_kefov")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_3s264")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.967709, -0.178551, 0.177929, 0, 0.705872, 0.70834, -0.252069, 0.685467, -0.683078, 0, 0, 0)
+shadow_enabled = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 10.013, -0.220318, 0, -14.8575)
+use_collision = true
+size = Vector3(117.797, 1, 8.90417)
+material = SubResource("StandardMaterial3D_kefov")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="CSGPolygon3D" type="CSGPolygon3D" parent="."]
+transform = Transform3D(0.486732, 0, -0.873551, -0.522948, 0.801014, -0.29138, 0.699727, 0.598646, 0.389879, 1.45275, 2.21689, -1.22455)
+
+[node name="Dither抖动" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.803, 1.5, 0)
+material = SubResource("ShaderMaterial_mt54i")
+
+[node name="Label3D" type="Label3D" parent="Dither抖动"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.22194, 0)
+modulate = Color(0.972767, 0, 0.262709, 1)
+text = "Dither shader
+抖动去色效果"
+
+[node name="ProtoController" parent="." instance=ExtResource("1_m7dbh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.52618, 5.98634)
+
+[node name="Label3D" type="Label3D" parent="ProtoController"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.714456, -10.8592)
+modulate = Color(0.0605303, 0.0605303, 0.0605303, 1)
+text = "鼠标+方向键盘移动.
+
+ESC键返回Home"
+font_size = 64

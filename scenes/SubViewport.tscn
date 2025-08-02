@@ -1,0 +1,51 @@
+[gd_scene load_steps=7 format=3 uid="uid://c44ho0ns03x5c"]
+
+[ext_resource type="PackedScene" uid="uid://vlafacj4gowa" path="res://scenes/main_3d.tscn" id="1_i6oof"]
+[ext_resource type="Shader" uid="uid://bxuvh136y8yxs" path="res://shaders/3d_stylized/3D_遮挡抖动.gdshader" id="1_lg6jf"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lg6jf"]
+render_priority = 0
+shader = ExtResource("1_lg6jf")
+shader_parameter/fade_inner_radius = 5.821
+shader_parameter/fade_outer_radius = 4.776
+
+[sub_resource type="QuadMesh" id="QuadMesh_lg6jf"]
+material = SubResource("ShaderMaterial_lg6jf")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bv6hx"]
+render_priority = 0
+shader = ExtResource("1_lg6jf")
+shader_parameter/fade_inner_radius = 1.0
+shader_parameter/fade_outer_radius = 3.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_dh515"]
+material = SubResource("ShaderMaterial_bv6hx")
+
+[node name="SubViewport" type="SubViewportContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="."]
+handle_input_locally = false
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewport"]
+transform = Transform3D(10.6125, 0, 0, 0, 6.34103, 0, 0, 0, 1, 7.70304, 4.64095, -8.92332)
+mesh = SubResource("QuadMesh_lg6jf")
+
+[node name="Main3d" parent="SubViewport" instance=ExtResource("1_i6oof")]
+transform = Transform3D(1, 0, 0, 0, 0.999999, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.62908, 3.26961, -4.85752)
+mesh = SubResource("SphereMesh_dh515")
+skeleton = NodePath("../CSGSphere3D")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.31842, 3.26961, -4.85752)
+radial_segments = 20
