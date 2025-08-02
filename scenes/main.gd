@@ -11,3 +11,7 @@ func _on_l_btn滚动星空_pressed() -> void:
 	popup.show_popup()
 
 	
+
+
+func _on_goto3d_button_pressed() -> void:
+	get_tree().change_scene_to_file('res://scenes/main_3d.tscn')

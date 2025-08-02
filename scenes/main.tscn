@@ -33,9 +33,13 @@ grow_vertical = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="LBtn滚动星空" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
+[node name="Btn滚动星空" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
 layout_mode = 2
 text = "滚动星空"
+
+[node name="BtnGoto3D" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
+layout_mode = 2
+text = "Goto 3D"
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 2
@@ -48,4 +52,5 @@ material = SubResource("ShaderMaterial_0wfyh")
 layout_mode = 2
 size_flags_vertical = 3
 
-[connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/LBtn滚动星空" to="." method="_on_l_btn滚动星空_pressed"]
+[connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn滚动星空" to="." method="_on_l_btn滚动星空_pressed"]
+[connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/BtnGoto3D" to="." method="_on_goto3d_button_pressed"]
