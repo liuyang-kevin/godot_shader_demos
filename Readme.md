@@ -1,1 +1,4 @@
  搜集一些shader, 记录一些文档
+
+BG       合适做背景 Background
+Styl, S_ 用作风格化 "风格化"（Stylized）
