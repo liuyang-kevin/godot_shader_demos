@@ -24,3 +24,12 @@ func _on_btn抖动dither_pressed():
 	popup.file_path = "res://docs/抖动Dither.md"
 	pop_ui.add_child(popup)
 	popup.show_popup()
+
+
+func _on_btn圣光_pressed():
+	$"PanelContainer/圣光效果".visible = true
+	
+func _invisibleAllShaderContainer():
+	for c in $"PanelContainer".get_children():
+		if c is Control:
+			c.visible = false

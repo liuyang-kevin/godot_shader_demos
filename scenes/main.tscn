@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://b2ooh4xecwrjj"]
+[gd_scene load_steps=8 format=3 uid="uid://b2ooh4xecwrjj"]
 
 [ext_resource type="Script" uid="uid://cea1kneocb2ci" path="res://scenes/main.gd" id="1_0wfyh"]
 [ext_resource type="Shader" uid="uid://dvo1ova0hrdq2" path="res://shaders/background/滚动星空.gdshader" id="1_o5qli"]
 [ext_resource type="Shader" uid="uid://du0xfqfv4oxqs" path="res://shaders/stylized/抖动.gdshader" id="3_jyhfs"]
 [ext_resource type="Texture2D" uid="uid://5pbhwlf2h5pe" path="res://assets/132647718_p0.png" id="4_jyhfs"]
+[ext_resource type="Script" uid="uid://dof4gghif8sfu" path="res://scripts/圣光效果.gd" id="5_tbgi4"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0wfyh"]
 shader = ExtResource("1_o5qli")
@@ -47,9 +48,17 @@ text = "滚动星空"
 layout_mode = 2
 text = "抖动Dither"
 
+[node name="Btn圣光" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
+layout_mode = 2
+text = "圣光"
+
 [node name="BtnGoto3D" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
 layout_mode = 2
 text = "Goto 3D"
+
+[node name="BtnInvisibleAll" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
+layout_mode = 2
+text = "隐藏所有"
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 2
@@ -84,6 +93,13 @@ handle_input_locally = false
 size = Vector2i(2, 2)
 render_target_update_mode = 0
 
+[node name="圣光效果" type="ColorRect" parent="PanelContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("5_tbgi4")
+
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn滚动星空" to="." method="_on_l_btn滚动星空_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn抖动Dither" to="." method="_on_btn抖动dither_pressed"]
+[connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn圣光" to="." method="_on_btn圣光_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/BtnGoto3D" to="." method="_on_goto3d_button_pressed"]
+[connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/BtnInvisibleAll" to="." method="_invisibleAllShaderContainer"]
