@@ -52,6 +52,10 @@ text = "抖动Dither"
 layout_mode = 2
 text = "圣光"
 
+[node name="Btn精灵拖影" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
+layout_mode = 2
+text = "精灵拖影"
+
 [node name="BtnGoto3D" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
 layout_mode = 2
 text = "Goto 3D"
@@ -101,5 +105,6 @@ script = ExtResource("5_tbgi4")
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn滚动星空" to="." method="_on_l_btn滚动星空_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn抖动Dither" to="." method="_on_btn抖动dither_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn圣光" to="." method="_on_btn圣光_pressed"]
+[connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn精灵拖影" to="." method="_on_btn精灵拖影_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/BtnGoto3D" to="." method="_on_goto3d_button_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/BtnInvisibleAll" to="." method="_invisibleAllShaderContainer"]

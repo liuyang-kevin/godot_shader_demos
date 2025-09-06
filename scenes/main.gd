@@ -33,3 +33,7 @@ func _invisibleAllShaderContainer():
 	for c in $"PanelContainer".get_children():
 		if c is Control:
 			c.visible = false
+
+
+func _on_btn精灵拖影_pressed() -> void:
+	pass # Replace with function body.

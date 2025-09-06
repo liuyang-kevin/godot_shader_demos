@@ -5,6 +5,8 @@ Styl, S_ 用作风格化 "风格化"（Stylized）
 
 
 # 随笔
+需要用https协议clone项目, ssh clone会失败
+
 `shader_type spatial;` 这是3d空间shader 需要给3d模型
 
 

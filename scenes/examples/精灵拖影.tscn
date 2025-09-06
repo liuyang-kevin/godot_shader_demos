@@ -1,0 +1,331 @@
+[gd_scene load_steps=15 format=4 uid="uid://c8su7pby6f76h"]
+
+[ext_resource type="TileSet" uid="uid://b0w5k1cean8dx" path="res://assets/tres/常用瓦片.tres" id="1_jrvdo"]
+[ext_resource type="Texture2D" uid="uid://doyncgoxcyrfh" path="res://assets/sheets/120x80_knight/_Idle.png" id="2_ogfap"]
+[ext_resource type="Animation" uid="uid://haiu0ttceqlg" path="res://assets/tres/player_knight/Run.res" id="3_7fquv"]
+[ext_resource type="Script" uid="uid://ca3h6uhesdvoa" path="res://scenes/examples/AfterimageTrail.gd" id="4_7fquv"]
+[ext_resource type="Texture2D" uid="uid://dcaxkltlk2o61" path="res://assets/sheets/120x80_knight/_Fall.png" id="4_c487u"]
+[ext_resource type="Texture2D" uid="uid://b0b3qjuopfh1p" path="res://assets/sheets/120x80_knight/_Jump.png" id="5_ieu0f"]
+
+[sub_resource type="GDScript" id="GDScript_c487u"]
+script/source = "extends CharacterBody2D
+
+@onready var sprite_2d: Sprite2D = $Sprite2D
+@onready var animation_player: AnimationPlayer = $Sprite2D/AnimationPlayer
+
+# 移动参数
+@export var max_speed: float = 300.0
+@export var acceleration: float = 1500.0
+@export var friction: float = 1200.0
+
+# 跳跃参数
+@export var jump_velocity: float = -400.0
+
+# 冲刺参数
+@export var dash_speed: float = 600.0
+@export var dash_duration: float = 0.2
+var can_dash: bool = true
+var is_dashing: bool = false
+var dash_direction: Vector2 = Vector2.ZERO
+var dash_timer: float = 0.0
+
+# 获取重力设置
+var gravity = ProjectSettings.get_setting(\"physics/2d/default_gravity\")
+
+func _physics_process(delta):
+	if not is_dashing:
+		# 添加重力
+		if not is_on_floor():
+			velocity.y += gravity * delta
+		
+		# 处理跳跃
+		if Input.is_action_just_pressed(\"ui_accept\") and is_on_floor():
+			velocity.y = jump_velocity
+		
+		# 获取输入
+		var input_direction = Input.get_axis(\"ui_left\", \"ui_right\")
+		
+		# 处理水平移动
+		if input_direction != 0:
+			velocity.x = move_toward(velocity.x, input_direction * max_speed, acceleration * delta)
+		else:
+			velocity.x = move_toward(velocity.x, 0, friction * delta)
+		
+		# 处理冲刺输入
+		if Input.is_action_just_pressed(\"dash\") and can_dash:
+			start_dash(input_direction)
+	else:
+		# 处理冲刺
+		dash_timer -= delta
+		if dash_timer <= 0:
+			end_dash()
+	
+	# 更新动画
+	update_animation()
+	
+	# 移动角色
+	move_and_slide()
+
+func start_dash(input_direction):
+	# 确定冲刺方向
+	if input_direction != 0:
+		dash_direction = Vector2(input_direction, 0)
+	else:
+		# 如果没有输入方向，根据角色朝向决定
+		dash_direction = Vector2(1 if sprite_2d.flip_h else -1, 0)
+	
+	is_dashing = true
+	can_dash = false
+	dash_timer = dash_duration
+	velocity = dash_direction * dash_speed
+	
+	# 设置碰撞层，使其在冲刺时可能穿透某些平台
+	set_collision_mask_value(1, false) # 根据你的项目调整碰撞层
+	
+	# 播放冲刺动画（如果有）
+	if animation_player.has_animation(\"dash\"):
+		animation_player.play(\"dash\")
+
+func end_dash():
+	is_dashing = false
+	velocity.x *= 0.5  # 冲刺结束后减速
+	
+	# 恢复碰撞层
+	set_collision_mask_value(1, true)
+	
+	# 设置冷却时间后可以再次冲刺
+	await get_tree().create_timer(0.5).timeout
+	can_dash = true
+
+func update_animation():
+	if is_dashing:
+		return  # 冲刺时使用专用动画
+	
+	if is_on_floor():
+		if abs(velocity.x) > 10:
+			animation_player.play(\"run\")
+		else:
+			animation_player.play(\"idle\")
+	else:
+		if velocity.y < 0:
+			animation_player.play(\"jump\")
+		else:
+			animation_player.play(\"fall\")
+	
+	# 翻转精灵以面对移动方向
+	if velocity.x > 0:
+		sprite_2d.flip_h = false
+	elif velocity.x < 0:
+		sprite_2d.flip_h = true
+"
+
+[sub_resource type="GDScript" id="GDScript_7fquv"]
+script/source = "extends Sprite2D
+"
+
+[sub_resource type="Animation" id="Animation_ieu0f"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("2_ogfap")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame_coords")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2i(0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:hframes")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [10]
+}
+
+[sub_resource type="Animation" id="Animation_yhfbb"]
+resource_name = "idle"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("2_ogfap")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame_coords")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(3, 0), Vector2i(4, 0), Vector2i(5, 0), Vector2i(6, 0), Vector2i(7, 0), Vector2i(8, 0), Vector2i(9, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:hframes")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [10]
+}
+
+[sub_resource type="Animation" id="Animation_vwwvg"]
+resource_name = "fall"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("4_c487u")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame_coords")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.166667, 0.333333),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:hframes")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [3]
+}
+
+[sub_resource type="Animation" id="Animation_tgte4"]
+resource_name = "jump"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("5_ieu0f")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:frame_coords")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.166667, 0.333333),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:hframes")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [3]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vwwvg"]
+_data = {
+&"RESET": SubResource("Animation_ieu0f"),
+&"fall": SubResource("Animation_vwwvg"),
+&"idle": SubResource("Animation_yhfbb"),
+&"jump": SubResource("Animation_tgte4"),
+&"run": ExtResource("3_7fquv")
+}
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_jrvdo"]
+radius = 8.0
+height = 36.0
+
+[node name="精灵拖影" type="Node2D"]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAAEABYABAAGAAMAAAAFABYABAAGAAMAAAAGABYABAAGAAMAAAAHABYABAAGAAMAAAAIABYABAAGAAMAAAAJABYABAAGAAMAAAAKABYABAAGAAMAAAALABYABAAGAAMAAAAMABYABAAGAAMAAAANABYABAAGAAMAAAAOABYABAAGAAMAAAAPABYABAAGAAMAAAAQABYABAAGAAMAAAARABYABAAGAAMAAAASABYABAAGAAMAAAATABYABAAGAAMAAAAUABYABAAGAAMAAAAVABYABAAGAAMAAAAWABYABAAGAAMAAAAXABYABAAGAAMAAAAYABYABAAGAAMAAAAZABYABAAGAAMAAAAaABYABAAGAAMAAAAbABYABAAGAAMAAAAcABYABAAGAAMAAAAdABYABAAGAAMAAAAeABYABAAGAAMAAAAfABYABAAGAAMAAAAgABYABAAGAAMAAAAhABYABAAGAAMAAAAiABYABAAGAAMAAAAjABYABAAGAAMAAAAkABYABAAGAAMAAAAlABYABAAGAAMAAAAmABYABAAGAAMAAAAnABYABAAGAAMAAAAoABYABAAGAAMAAAApABYABAAGAAMAAAAqABYABAAGAAMAAAArABYABAAGAAMAAAAsABYABAAGAAMAAAAtABYABAAGAAMAAAAuABYABAAGAAMAAAAvABYABAAGAAMAAAAwABYABAAGAAMAAAAxABYABAAGAAMAAAAyABYABAAGAAMAAAAzABYABAAGAAMAAAA0ABYABAAGAAMAAAA1ABYABAAGAAMAAAA2ABYABAAGAAMAAAA3ABYABAAGAAMAAAA4ABYABAAGAAMAAAA5ABYABAAGAAMAAAA6ABYABAAGAAMAAAA7ABYABAAGAAMAAAA8ABYABAAGAAMAAAA9ABYABAAGAAMAAAA+ABYABAAGAAMAAAA/ABYABAAGAAMAAABAABYABAAGAAMAAABBABYABAAGAAMAAABCABYABAAGAAMAAAADABYABAAGAAMAAAACABYABAAGAAMAAAABABYABAAGAAMAAAABABUABAAGAAMAAAAAABUABAAGAAMAAAAAABQABAAGAAMAAAAAABMABAAGAAMAAAAAABYABAAGAAMAAABDABYABAAGAAMAAABEABYABAAGAAMAAABFABYABAAGAAMAAABGABYABAAGAAMAAABHABYABAAGAAMAAABHABUABAAGAAMAAABHABQABAAGAAMAAABHABMABAAGAAMAAABGABUABAAGAAMAAAA=")
+tile_set = ExtResource("1_jrvdo")
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+texture_filter = 1
+position = Vector2(444, 326)
+script = SubResource("GDScript_c487u")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+position = Vector2(5, -22)
+texture = ExtResource("2_ogfap")
+hframes = 10
+script = SubResource("GDScript_7fquv")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CharacterBody2D/Sprite2D"]
+libraries = {
+&"": SubResource("AnimationLibrary_vwwvg")
+}
+
+[node name="AfterimageTrail" type="Node2D" parent="CharacterBody2D"]
+script = ExtResource("4_7fquv")
+source_path = NodePath("../Sprite2D")
+metadata/_custom_type_script = "uid://ca3h6uhesdvoa"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+shape = SubResource("CapsuleShape2D_jrvdo")
+
+[node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
+zoom = Vector2(2, 2)
