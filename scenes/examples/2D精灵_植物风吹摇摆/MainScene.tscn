@@ -1,0 +1,45 @@
+[gd_scene load_steps=6 format=3 uid="uid://cxx4md5j63xq4"]
+
+[ext_resource type="Material" uid="uid://tsju13hoxgc0" path="res://scenes/examples/2D精灵_植物风吹摇摆/assets/WindyTreeMaterial.tres" id="1_aeemo"]
+[ext_resource type="Texture2D" uid="uid://ckl8quf13mba8" path="res://scenes/examples/2D精灵_植物风吹摇摆/assets/TestTree.png" id="1_cuele"]
+[ext_resource type="Material" uid="uid://c0rdhjyy6k03a" path="res://scenes/examples/2D精灵_植物风吹摇摆/assets/WindyTreeMaterialPixelised.tres" id="3_rcc8b"]
+[ext_resource type="Material" uid="uid://dwba264ybn6pv" path="res://scenes/examples/2D精灵_植物风吹摇摆/assets/WindyBushMaterial.tres" id="3_rpk87"]
+[ext_resource type="Texture2D" uid="uid://bj6gsp4e66y4x" path="res://scenes/examples/2D精灵_植物风吹摇摆/assets/TestBush.png" id="4_rcc8b"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -120.0
+offset_top = -90.0
+offset_right = 123.0
+offset_bottom = 51.0
+color = Color(0.2048, 0.32, 0.26048, 1)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(0, -20)
+zoom = Vector2(5, 5)
+
+[node name="TestTree" type="Sprite2D" parent="."]
+material = ExtResource("1_aeemo")
+position = Vector2(1, -34)
+texture = ExtResource("1_cuele")
+
+[node name="TestTreePixelised" type="Sprite2D" parent="."]
+material = ExtResource("3_rcc8b")
+position = Vector2(-45, -34)
+texture = ExtResource("1_cuele")
+
+[node name="TestBush" type="Sprite2D" parent="."]
+material = ExtResource("3_rpk87")
+position = Vector2(36, -13.5)
+texture = ExtResource("4_rcc8b")
+
+[node name="TestBush2" type="Sprite2D" parent="."]
+material = ExtResource("3_rpk87")
+position = Vector2(61, -13.5)
+texture = ExtResource("4_rcc8b")
+
+[node name="TestBush3" type="Sprite2D" parent="."]
+material = ExtResource("3_rpk87")
+position = Vector2(49, -1.5)
+texture = ExtResource("4_rcc8b")
