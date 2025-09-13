@@ -1,0 +1,19 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://8pq66njhp6c5"]
+
+[ext_resource type="Shader" uid="uid://dpmi5tr30yfcn" path="res://shaders/3d_stylized/菲涅尔反射效果/菲涅尔反射.gdshader" id="1_i5hmd"]
+
+[sub_resource type="Gradient" id="Gradient_mt54i"]
+offsets = PackedFloat32Array(0, 0.0624, 0.3504, 0.528, 0.776, 1)
+colors = PackedColorArray(0.792157, 0, 0, 1, 0.0627451, 0.772549, 0.0627451, 1, 0.34902, 0.34902, 1, 1, 1, 0.529412, 0.529412, 1, 0, 0, 0.776471, 1, 0.792157, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_le0cj"]
+gradient = SubResource("Gradient_mt54i")
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_i5hmd")
+shader_parameter/fresnel_power = 3.0
+shader_parameter/emission_power = 3.0
+shader_parameter/white_lerp = 0.2
+shader_parameter/scroll_speed = 0.2
+shader_parameter/colors_texture = SubResource("GradientTexture1D_le0cj")

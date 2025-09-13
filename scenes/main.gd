@@ -23,7 +23,7 @@ func _ready():
 	close_button.hide()
 	close_button.focus_mode = Control.FOCUS_CLICK # 只能鼠标点击, 不能根据焦点模式选中
 	close_button.pressed.connect(_on_close_button_pressed)
-	add_child(close_button)
+	$Control/ScrollContainer/HFlowContainer.add_child(close_button)
 	
 	# 设置关闭按钮的位置（右上角）
 	close_button.position = Vector2(sub_viewport_container.position.x + sub_viewport_container.size.x - 100, 10)
@@ -149,3 +149,14 @@ func _on_btn双色dither_pressed() -> void:
 	popup.file_path = "res://docs/双色Dither.md"
 	pop_ui.add_child(popup)
 	popup.show_popup()
+
+
+func _on_btn_3d_pressed() -> void:
+	_invisibleAllShaderContainer()
+	is_subviewport_focused = true # 拦截UI操作锁
+	sub_viewport_container.visible = true
+	var scene = load("res://scenes/main_3d.tscn")
+	if scene:
+		current_subscene = scene.instantiate()
+		sub_viewport.add_child(current_subscene)
+		close_button.show()

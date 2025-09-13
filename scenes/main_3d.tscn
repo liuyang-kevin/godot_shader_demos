@@ -1,8 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://vlafacj4gowa"]
+[gd_scene load_steps=11 format=3 uid="uid://vlafacj4gowa"]
 
-[ext_resource type="Script" uid="uid://bxjwhtpigidpw" path="res://scenes/main_3d.gd" id="1_kefov"]
+[ext_resource type="Script" uid="uid://bpj2smd1jgntj" path="res://scenes/main_3d_gpt.gd" id="1_le0cj"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://scenes/proto_controller/proto_controller.tscn" id="1_m7dbh"]
 [ext_resource type="Shader" uid="uid://bxuvh136y8yxs" path="res://shaders/3d_stylized/3D_遮挡抖动.gdshader" id="2_kefov"]
+[ext_resource type="Material" uid="uid://8pq66njhp6c5" path="res://shaders/3d_stylized/菲涅尔反射效果/菲涅尔反射效果_3D_Material.tres" id="2_mt54i"]
+[ext_resource type="PackedScene" uid="uid://cy4xg5d7qjpi4" path="res://scenes/interactive_label_3d.tscn" id="5_le0cj"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_67ruw"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -26,8 +28,11 @@ shader = ExtResource("2_kefov")
 shader_parameter/fade_inner_radius = 1.0
 shader_parameter/fade_outer_radius = 3.0
 
-[node name="Main3d" type="Node3D"]
-script = ExtResource("1_kefov")
+[node name="Main3d" type="Node3D" node_paths=PackedStringArray("camera")]
+script = ExtResource("1_le0cj")
+camera = NodePath("ProtoController/Head/Camera3D")
+ray_distance = 50.0
+debug_enabled = false
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_3s264")
@@ -42,8 +47,10 @@ use_collision = true
 size = Vector3(117.797, 1, 8.90417)
 material = SubResource("StandardMaterial3D_kefov")
 
-[node name="CSGSphere3D" type="CSGSphere3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+[node name="CSGSphere3D2" type="CSGSphere3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0208015, 4.62192, 0)
+radial_segments = 36
+rings = 36
 
 [node name="CSGPolygon3D" type="CSGPolygon3D" parent="."]
 transform = Transform3D(0.486732, 0, -0.873551, -0.522948, 0.801014, -0.29138, 0.699727, 0.598646, 0.389879, 1.45275, 2.21689, -1.22455)
@@ -61,10 +68,35 @@ text = "Dither shader
 [node name="ProtoController" parent="." instance=ExtResource("1_m7dbh")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.52618, 5.98634)
 
-[node name="Label3D" type="Label3D" parent="ProtoController"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.714456, -10.8592)
-modulate = Color(0.0605303, 0.0605303, 0.0605303, 1)
-text = "鼠标+方向键盘移动.
+[node name="Label4InputHint" type="Label3D" parent="ProtoController"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53775, -10.8592)
+modulate = Color(0.0588235, 0.94902, 0.0588235, 1)
+outline_modulate = Color(0.991164, 0.991164, 0.991164, 1)
+text = "鼠标,wasd,方向键
 
 ESC键返回Home"
-font_size = 64
+font_size = 94
+outline_size = 32
+
+[node name="菲涅尔反射效果" type="Node3D" parent="."]
+transform = Transform3D(0.747195, 0, -0.664605, 0, 1, 0, 0.664605, 0, 0.747195, 8.3705, 0.224982, 1.57281)
+
+[node name="菲涅尔反射_附着在纹理上" type="CSGSphere3D" parent="菲涅尔反射效果"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.253299, 2.15656, 0)
+radial_segments = 36
+rings = 36
+material = ExtResource("2_mt54i")
+
+[node name="菲涅尔反射效果_附着再Overlay上" type="CSGSphere3D" parent="菲涅尔反射效果"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.73424, 3.09968, 0)
+material_overlay = ExtResource("2_mt54i")
+radial_segments = 36
+rings = 36
+
+[node name="InteractiveLabel3D" parent="菲涅尔反射效果" groups=["interactive_labels"] instance=ExtResource("5_le0cj")]
+transform = Transform3D(0.998027, 0, -0.0627906, 0, 1, 0, 0.0627906, 0, 0.998027, -0.55476, 2.49696, -1.61151)
+
+[node name="PopUI" type="CanvasLayer" parent="."]
+
+[editable path="ProtoController"]
+[editable path="菲涅尔反射效果/InteractiveLabel3D"]

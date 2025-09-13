@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://cy4xg5d7qjpi4"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mt54i"]
+size = Vector3(1.14496, 0.383362, 0.151245)
+
+[node name="InteractiveLabel3D" type="Label3D"]
+modulate = Color(0.972767, 0, 0.262709, 1)
+text = "Colored Fresnel
+菲涅尔反射效果"
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00107002, 0.00668335, 0.00469971)
+shape = SubResource("BoxShape3D_mt54i")
