@@ -16,7 +16,7 @@ shader_parameter/time = 10.78
 shader_parameter/N_dot = 32.0
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_jvf8l"]
-viewport_path = NodePath("通过视窗实现shader管线/SubViewport")
+viewport_path = NodePath("Example01/SubViewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0okcp"]
 shader = ExtResource("1_jvf8l")
@@ -42,13 +42,13 @@ color = Color(0.2048, 0.32, 0.26048, 1)
 offset = Vector2(0, -20)
 zoom = Vector2(2, 2)
 
-[node name="通过视窗实现shader管线" type="Sprite2D" parent="."]
+[node name="Example01" type="Sprite2D" parent="."]
 texture_filter = 1
 material = SubResource("ShaderMaterial_jvf8l")
 position = Vector2(-135, -35)
 texture = SubResource("ViewportTexture_jvf8l")
 
-[node name="SubViewport" type="SubViewport" parent="通过视窗实现shader管线"]
+[node name="SubViewport" type="SubViewport" parent="Example01"]
 disable_3d = true
 transparent_bg = true
 handle_input_locally = false
@@ -56,12 +56,12 @@ canvas_item_default_texture_filter = 0
 gui_disable_input = true
 size = Vector2i(54, 67)
 
-[node name="TestTree2" type="Sprite2D" parent="通过视窗实现shader管线/SubViewport"]
+[node name="TestTree2" type="Sprite2D" parent="Example01/SubViewport"]
 material = ExtResource("1_7y1n6")
 texture = ExtResource("2_e3jav")
 centered = false
 
-[node name="Label" type="Label" parent="通过视窗实现shader管线"]
+[node name="Label" type="Label" parent="Example01"]
 offset_left = -100.0
 offset_top = 50.0
 offset_right = 76.0
