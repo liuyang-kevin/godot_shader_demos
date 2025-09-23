@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://n581iugyj3ei"
-path="res://.godot/imported/_CrouchWalk.png-6cb2299d0c358f8ec8dd1b67b8674f04.ctex"
+uid="uid://do0yv8kfk7bj"
+path="res://.godot/imported/TestTree.png-252fadbdd7d27a5555221d92d8a17d57.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sheets/120x80_knight/_CrouchWalk.png"
-dest_files=["res://.godot/imported/_CrouchWalk.png-6cb2299d0c358f8ec8dd1b67b8674f04.ctex"]
+source_file="res://scenes/examples/2D精灵_影子/assets/TestTree.png"
+dest_files=["res://.godot/imported/TestTree.png-252fadbdd7d27a5555221d92d8a17d57.ctex"]
 
 [params]
 
@@ -21,7 +21,7 @@ compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
-compress/normal_map=0
+compress/normal_map=1
 compress/channel_pack=0
 mipmaps/generate=false
 mipmaps/limit=-1

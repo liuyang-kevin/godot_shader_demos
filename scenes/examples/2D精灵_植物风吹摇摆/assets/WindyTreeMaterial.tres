@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://tsju13hoxgc0"]
 
-[ext_resource type="Shader" path="res://scenes/examples/2D精灵_植物风吹摇摆/assets/WindyFoliage.gdshader" id="1_csf8i"]
+[ext_resource type="Shader" uid="uid://cado6bgycr42m" path="res://scenes/examples/2D精灵_植物风吹摇摆/assets/WindyFoliage.gdshader" id="1_csf8i"]
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_m3gug"]
 

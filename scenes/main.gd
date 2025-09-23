@@ -160,3 +160,30 @@ func _on_btn_3d_pressed() -> void:
 		current_subscene = scene.instantiate()
 		sub_viewport.add_child(current_subscene)
 		close_button.show()
+
+
+func _on_btn精灵阴影_pressed():
+	_invisibleAllShaderContainer()
+	is_subviewport_focused = true # 拦截UI操作锁
+	# 显示SubViewportContainer
+	sub_viewport_container.visible = true
+	
+	# 加载并显示精灵拖影场景
+	var scene = load("res://scenes/examples/2D精灵_影子/MainScene.tscn")
+	if scene:
+		current_subscene = scene.instantiate()
+		sub_viewport.add_child(current_subscene)
+		
+		# 设置SubViewport大小与场景匹配
+		if current_subscene is Node2D:
+			var scene_size = current_subscene.get_viewport_rect().size
+			sub_viewport.size = scene_size
+			sub_viewport_container.size = scene_size
+			
+		# 显示关闭按钮
+		close_button.show()
+	
+	# 显示说明文档
+	popup.file_path = "res://docs/精灵阴影.md"
+	pop_ui.add_child(popup)
+	popup.show_popup()

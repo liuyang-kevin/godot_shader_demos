@@ -1,0 +1,91 @@
+[gd_scene load_steps=7 format=3 uid="uid://cupemnqo3k1jr"]
+
+[ext_resource type="Material" uid="uid://tsju13hoxgc0" path="res://scenes/examples/2D精灵_植物风吹摇摆/assets/WindyTreeMaterial.tres" id="1_7y1n6"]
+[ext_resource type="Shader" uid="uid://bl7powdkn0hd5" path="res://scenes/examples/2D精灵_影子/2D精灵_影子.gdshader" id="1_jvf8l"]
+[ext_resource type="Texture2D" uid="uid://do0yv8kfk7bj" path="res://scenes/examples/2D精灵_影子/assets/TestTree.png" id="2_e3jav"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jvf8l"]
+shader = ExtResource("1_jvf8l")
+shader_parameter/height_Map = ExtResource("2_e3jav")
+shader_parameter/uv_Add = Vector2(0, 0)
+shader_parameter/uv_Mul = 1.2
+shader_parameter/modulate = Color(0, 0, 0, 1)
+shader_parameter/x_buffer = 2.0
+shader_parameter/y_buffer = 1.0
+shader_parameter/time = 10.78
+shader_parameter/N_dot = 32.0
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_jvf8l"]
+viewport_path = NodePath("通过视窗实现shader管线/SubViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0okcp"]
+shader = ExtResource("1_jvf8l")
+shader_parameter/height_Map = ExtResource("2_e3jav")
+shader_parameter/uv_Add = Vector2(0, 0)
+shader_parameter/uv_Mul = 1.2
+shader_parameter/modulate = Color(0, 0, 0, 1)
+shader_parameter/x_buffer = 2.0
+shader_parameter/y_buffer = 1.0
+shader_parameter/time = 10.78
+shader_parameter/N_dot = 32.0
+
+[node name="Node2D" type="Node2D"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -430.0
+offset_top = -352.0
+offset_right = 570.0
+offset_bottom = 648.0
+color = Color(0.2048, 0.32, 0.26048, 1)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(0, -20)
+zoom = Vector2(2, 2)
+
+[node name="通过视窗实现shader管线" type="Sprite2D" parent="."]
+texture_filter = 1
+material = SubResource("ShaderMaterial_jvf8l")
+position = Vector2(-135, -35)
+texture = SubResource("ViewportTexture_jvf8l")
+
+[node name="SubViewport" type="SubViewport" parent="通过视窗实现shader管线"]
+disable_3d = true
+transparent_bg = true
+handle_input_locally = false
+canvas_item_default_texture_filter = 0
+gui_disable_input = true
+size = Vector2i(54, 67)
+
+[node name="TestTree2" type="Sprite2D" parent="通过视窗实现shader管线/SubViewport"]
+material = ExtResource("1_7y1n6")
+texture = ExtResource("2_e3jav")
+centered = false
+
+[node name="Label" type="Label" parent="通过视窗实现shader管线"]
+offset_left = -100.0
+offset_top = 50.0
+offset_right = 76.0
+offset_bottom = 116.0
+text = "使用渲染SubViewport
+叠加shader,
+会有像素抖动的卡顿问题"
+
+[node name="两个精灵叠加" type="Sprite2D" parent="."]
+texture_filter = 1
+material = SubResource("ShaderMaterial_0okcp")
+position = Vector2(118, -85)
+texture = ExtResource("2_e3jav")
+
+[node name="TestTree2" type="Sprite2D" parent="两个精灵叠加"]
+material = ExtResource("1_7y1n6")
+texture = ExtResource("2_e3jav")
+
+[node name="Label" type="Label" parent="两个精灵叠加"]
+offset_left = -100.0
+offset_top = 50.0
+offset_right = 76.0
+offset_bottom = 116.0
+text = "失败,
+两个精灵叠加, 
+效果不行
+还要解决叠加问题"
