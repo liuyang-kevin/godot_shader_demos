@@ -1,0 +1,109 @@
+[gd_scene load_steps=11 format=3 uid="uid://ck04tyrtgtrvx"]
+
+[ext_resource type="Shader" uid="uid://db7fowmqatu5o" path="res://scenes/examples/2D精灵_植物风吹摇摆_02/FoliageWind.gdshader" id="1_toww5"]
+[ext_resource type="Texture2D" uid="uid://5yuwbvy6b15t" path="res://scenes/examples/2D精灵_植物风吹摇摆_02/assets/TestBush_遮罩.png" id="3_toww5"]
+[ext_resource type="Texture2D" uid="uid://chevv1fbug1ea" path="res://scenes/examples/2D精灵_植物风吹摇摆_02/assets/TestBush.png" id="5_8pivs"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_dx12q"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_toww5"]
+noise = SubResource("FastNoiseLite_dx12q")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_toww5"]
+shader = ExtResource("1_toww5")
+shader_parameter/pixel_mode = false
+shader_parameter/pixel_amount = 32.0
+shader_parameter/distortion = 0.01
+shader_parameter/texture_noise_system = true
+shader_parameter/noise_speed = 0.05
+shader_parameter/noise_direction = -1
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_toww5")
+shader_parameter/worley_noise_system = false
+shader_parameter/worley_cell_density = 10.0
+shader_parameter/worley_speed = 2.0
+shader_parameter/edge_and_mask = false
+shader_parameter/alpha_value = 1.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_r71sa"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r71sa"]
+shader = ExtResource("1_toww5")
+shader_parameter/pixel_mode = false
+shader_parameter/pixel_amount = 32.0
+shader_parameter/distortion = 0.01
+shader_parameter/texture_noise_system = false
+shader_parameter/noise_speed = 1.0
+shader_parameter/noise_direction = -1
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_r71sa")
+shader_parameter/worley_noise_system = true
+shader_parameter/worley_cell_density = 10.0
+shader_parameter/worley_speed = 2.0
+shader_parameter/mask_texture = ExtResource("3_toww5")
+shader_parameter/edge_and_mask = true
+shader_parameter/alpha_value = 1.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_mk16a"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dx12q"]
+shader = ExtResource("1_toww5")
+shader_parameter/pixel_mode = false
+shader_parameter/pixel_amount = 32.0
+shader_parameter/distortion = 0.01
+shader_parameter/texture_noise_system = true
+shader_parameter/noise_speed = 5.0
+shader_parameter/noise_direction = -1
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_mk16a")
+shader_parameter/worley_noise_system = false
+shader_parameter/worley_cell_density = 10.0
+shader_parameter/worley_speed = 2.0
+shader_parameter/mask_texture = ExtResource("3_toww5")
+shader_parameter/edge_and_mask = true
+shader_parameter/alpha_value = 1.0
+
+[node name="Node2D" type="Node2D"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -120.0
+offset_top = -90.0
+offset_right = 123.0
+offset_bottom = 51.0
+color = Color(0.2048, 0.32, 0.26048, 1)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(0, -20)
+zoom = Vector2(5, 5)
+
+[node name="TestBush" type="Sprite2D" parent="."]
+texture_filter = 1
+material = SubResource("ShaderMaterial_toww5")
+position = Vector2(-58, -25)
+texture = ExtResource("5_8pivs")
+
+[node name="TestBush2" type="Sprite2D" parent="."]
+texture_filter = 1
+material = SubResource("ShaderMaterial_r71sa")
+position = Vector2(-1, -25)
+texture = ExtResource("5_8pivs")
+
+[node name="TestBush3" type="Sprite2D" parent="."]
+texture_filter = 1
+material = SubResource("ShaderMaterial_dx12q")
+position = Vector2(55, -27)
+texture = ExtResource("5_8pivs")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -89.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "第一个整图抖动, 第二\\三个有遮罩
+
+该着色器有3种生成运动的方式：
+噪声纹理，根据噪声纹理对整幅精灵图进行运动。
+带有 Worley 噪声的运动，将运动应用于整个带有 Worley 噪声的精灵。
+边缘和遮罩，仅将噪声纹理应用于精灵的边缘，并使用自定义遮罩纹理仅在精灵的某些区域生成运动。"

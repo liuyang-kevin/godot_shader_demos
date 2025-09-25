@@ -165,11 +165,20 @@ func _on_btn_3d_pressed() -> void:
 func _on_btn精灵阴影_pressed():
 	_invisibleAllShaderContainer()
 	is_subviewport_focused = true # 拦截UI操作锁
+	sub_viewport_container.visible = true # 显示SubViewportContainer
+	# 加载并显示精灵拖影场景
+	_show_sub_scene("res://scenes/examples/2D精灵_影子/MainScene.tscn")
+	_pop_doc_path("res://docs/精灵阴影.md")
+
+
+func _on_btn树丛摇曳2_pressed() -> void:
+	_invisibleAllShaderContainer()
+	is_subviewport_focused = true # 拦截UI操作锁
 	# 显示SubViewportContainer
 	sub_viewport_container.visible = true
 	
 	# 加载并显示精灵拖影场景
-	var scene = load("res://scenes/examples/2D精灵_影子/MainScene.tscn")
+	var scene = load("res://scenes/examples/2D精灵_植物风吹摇摆_02/MainScene.tscn")
 	if scene:
 		current_subscene = scene.instantiate()
 		sub_viewport.add_child(current_subscene)
@@ -183,7 +192,32 @@ func _on_btn精灵阴影_pressed():
 		# 显示关闭按钮
 		close_button.show()
 	
-	# 显示说明文档
-	popup.file_path = "res://docs/精灵阴影.md"
-	pop_ui.add_child(popup)
+	_pop_doc_path("res://docs/精灵摇曳_02.md")
+
+func _on_btn简易抖动_pressed() -> void:
+	_invisibleAllShaderContainer()
+	$"PanelContainer/S_简易随机抖动".visible = true
+	_pop_doc_path("res://docs/简易2D顶点位移.md")
+	
+## 加载并显示场景
+func _show_sub_scene(path:String):
+	var scene = load(path)
+	if scene:
+		current_subscene = scene.instantiate()
+		sub_viewport.add_child(current_subscene)
+		
+		# 设置SubViewport大小与场景匹配
+		if current_subscene is Node2D:
+			var scene_size = current_subscene.get_viewport_rect().size
+			sub_viewport.size = scene_size
+			sub_viewport_container.size = scene_size
+			
+		# 显示关闭按钮
+		close_button.show()
+
+## 显示说明文档
+func _pop_doc_path(path:String):
+	popup.file_path = path
+	if not pop_ui.has_node(popup.get_path()):
+		pop_ui.add_child(popup)
 	popup.show_popup()

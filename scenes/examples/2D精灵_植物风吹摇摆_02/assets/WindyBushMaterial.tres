@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://dljo235ny0lg0"]
+
+[ext_resource type="Shader" uid="uid://3aj8pl0vg2mp" path="res://scenes/examples/2D精灵_植物风吹摇摆_02/assets/WindyFoliage.gdshader" id="1_nl330"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_j8lpc"]
+
+[resource]
+shader = ExtResource("1_nl330")
+shader_parameter/render_noise = false
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_j8lpc")
+shader_parameter/amplitude = 0.16
+shader_parameter/time_scale = 0.4
+shader_parameter/noise_scale = 0.001
+shader_parameter/rotation_strength = 1.0
+shader_parameter/rotation_pivot = Vector2(0.5, 1)
