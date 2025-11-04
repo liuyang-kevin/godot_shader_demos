@@ -2,5 +2,6 @@
     "files.exclude": {
         "**/*.uid": true, 
         "**/*.import": true
-    }
+    },
+    "godotTools.editorPath.godot4": "/home/kevin/app/godot4.5/Godot_v4.5.1-stable_linux.x86_64"
 }
