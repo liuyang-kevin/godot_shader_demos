@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1762278327|4643211';
+const CACHE_VERSION = '1762446561|4454530';
 /** @type {string} */
 const CACHE_PREFIX = 'godot_shader_dem-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
