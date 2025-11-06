@@ -118,6 +118,10 @@ text = "2D树摇曳"
 layout_mode = 2
 text = "2D摇曳02"
 
+[node name="Btn闪卡效果" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
+layout_mode = 2
+text = "2仿3闪卡"
+
 [node name="Btn精灵阴影" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
 layout_mode = 2
 text = "2D精灵阴影"
@@ -195,6 +199,7 @@ stretch_mode = 5
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn精灵拖影" to="." method="_on_btn精灵拖影_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn树丛摇曳" to="." method="_on_btn树丛摇曳_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn树丛摇曳2" to="." method="_on_btn树丛摇曳2_pressed"]
+[connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn闪卡效果" to="." method="_on_btn闪卡效果_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn精灵阴影" to="." method="_on_btn精灵阴影_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn3D" to="." method="_on_btn_3d_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/BtnGoto3D" to="." method="_on_goto3d_button_pressed"]
