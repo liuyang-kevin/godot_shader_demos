@@ -90,25 +90,25 @@ jobs:
       - name: Add file hash for cache busting 🔄
         run: |
           cd build/web
-          # 获取当前提交的短哈希, 作为版本标识 (确保每次构建文件名唯一)
+          # 允许 Git 在 CI 容器中读取当前仓库信息 (避免 safe.directory 错误)
+          git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
+
+          # 获取当前提交的短哈希
           HASH=$(git rev-parse --short HEAD)
           echo "Using build hash: $HASH"
 
-          # 遍历所有关键资源文件并重命名
+          # 遍历资源文件, 重命名并更新 index.html
           for f in *.pck *.wasm *.js; do
             [ -f "$f" ] || continue
             EXT="${f##*.}"
             BASE="${f%.*}"
             NEW="${BASE}.${HASH}.${EXT}"
             mv "$f" "$NEW"
-            # 替换 HTML 中的引用路径
             sed -i "s|$f|$NEW|g" index.html
           done
 
-          # 可选: 在页面底部显示当前构建版本信息 (方便确认加载的是新版本)
+          # 可选: 显示版本信息
           sed -i "s|</body>|<p style='position:fixed;bottom:4px;right:8px;font-size:12px;color:#999;'>Build $HASH</p></body>|" index.html
-
-          # 输出确认日志
           echo "Updated index.html with hash $HASH"
 
       - name: Upload Artifact
