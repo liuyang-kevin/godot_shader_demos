@@ -2,7 +2,6 @@ name: "godot-ci export"
 on: push
 
 # NOTE: If your `project.godot` is at the repository root, set `PROJECT_PATH` below to ".".
-
 env:
   GODOT_VERSION: 4.5.1
   EXPORT_NAME: shader-demos
@@ -86,30 +85,44 @@ jobs:
           cd $PROJECT_PATH
           godot --headless --verbose --export-release "Web" "$EXPORT_DIR/web/index.html"
 
-      # 👇 Added for cache busting: 生成唯一版本哈希, 重命名导出文件, 并替换 index.html 中的引用
+      # ✅ 新增：自动为 wasm/pck/js 文件添加 hash 防缓存机制
       - name: Add file hash for cache busting 🔄
         run: |
           cd build/web
-          # 允许 Git 在 CI 容器中读取当前仓库信息 (避免 safe.directory 错误)
+          # 修复 GitHub Actions 容器权限问题
           git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
 
-          # 获取当前提交的短哈希
+          # 获取当前提交短哈希
           HASH=$(git rev-parse --short HEAD)
           echo "Using build hash: $HASH"
 
-          # 遍历资源文件, 重命名并更新 index.html
-          for f in *.pck *.wasm *.js; do
-            [ -f "$f" ] || continue
-            EXT="${f##*.}"
-            BASE="${f%.*}"
-            NEW="${BASE}.${HASH}.${EXT}"
-            mv "$f" "$NEW"
-            sed -i "s|$f|$NEW|g" index.html
-          done
+          # 识别文件
+          WASM_FILE=$(ls *.wasm)
+          PCK_FILE=$(ls *.pck)
+          JS_FILE=$(ls *.js | grep -vE "godot.*\.js")  # 排除 runtime 脚本
 
-          # 可选: 显示版本信息
+          # 新文件名
+          WASM_NEW="${WASM_FILE%.*}.${HASH}.wasm"
+          PCK_NEW="${PCK_FILE%.*}.${HASH}.pck"
+          JS_NEW="${JS_FILE%.*}.${HASH}.js"
+
+          # 重命名文件
+          mv "$WASM_FILE" "$WASM_NEW"
+          mv "$PCK_FILE" "$PCK_NEW"
+          mv "$JS_FILE" "$JS_NEW"
+
+          # 更新 index.html 引用
+          sed -i "s|$JS_FILE|$JS_NEW|g" index.html
+          sed -i "s|$WASM_FILE|$WASM_NEW|g" index.html
+          sed -i "s|$PCK_FILE|$PCK_NEW|g" index.html
+
+          # 修改导出的 JS 文件以加载带 hash 的资源
+          sed -i "s|executable: *\"index\"|executable: \"${WASM_NEW%.*}\"|g" "$JS_NEW"
+          sed -i "s|mainPack: *\"index.pck\"|mainPack: \"${PCK_NEW}\"|g" "$JS_NEW"
+
+          # 可选：在 HTML 页底部显示构建版本号
           sed -i "s|</body>|<p style='position:fixed;bottom:4px;right:8px;font-size:12px;color:#999;'>Build $HASH</p></body>|" index.html
-          echo "Updated index.html with hash $HASH"
+          echo "✔ Updated index.html and $JS_NEW for hash versioning"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -121,12 +134,11 @@ jobs:
         run: |
           apt-get update && apt-get install -y rsync
 
-      # 👇 Deploy step remains unchanged — 将构建好的 Web 导出内容部署到 gh-pages 分支
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder: build/web # The folder the action should deploy.
+          branch: gh-pages               # The branch the action should deploy to.
+          folder: build/web              # The folder the action should deploy.
           clean: true                    # ✅ 每次部署前清空 gh-pages 分支旧内容
 
   # export-mac:
