@@ -230,3 +230,12 @@ func _on_btn闪卡效果_pressed():
 	# 加载并显示精灵拖影场景
 	_show_sub_scene("res://scenes/examples/3D 卡片倾斜 + 鼠标联动 + 闪光扫光/卡片扫光.tscn")
 	#_pop_doc_path("res://docs/精灵阴影.md")
+
+
+func _on_btn_vfx_lib_pressed() -> void:
+	_invisibleAllShaderContainer()
+	is_subviewport_focused = true # 拦截UI操作锁
+	sub_viewport_container.visible = true # 显示SubViewportContainer
+	# 加载并显示精灵拖影场景
+	_show_sub_scene("res://addons/vfx_library/demo/vfx_demo.tscn")
+	_pop_doc_path("res://addons/vfx_library/demo/README.md")

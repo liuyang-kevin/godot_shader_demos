@@ -15,6 +15,11 @@ run/main_scene="uid://b2ooh4xecwrjj"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+EnvVFX="*res://addons/vfx_library/env_vfx.gd"
+VFX="*res://addons/vfx_library/vfx.gd"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/anim_sheet/plugin.cfg", "res://addons/markdownlabel/plugin.cfg")

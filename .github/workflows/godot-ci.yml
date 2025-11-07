@@ -73,29 +73,61 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: true
+
       - name: Setup
         run: |
           mkdir -v -p ~/.local/share/godot/export_templates/
           mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+
       - name: Web Build
         run: |
           mkdir -v -p build/web
           EXPORT_DIR="$(readlink -f build)"
           cd $PROJECT_PATH
           godot --headless --verbose --export-release "Web" "$EXPORT_DIR/web/index.html"
+
+      # 👇 Added for cache busting: 生成唯一版本哈希, 重命名导出文件, 并替换 index.html 中的引用
+      - name: Add file hash for cache busting 🔄
+        run: |
+          cd build/web
+          # 获取当前提交的短哈希, 作为版本标识 (确保每次构建文件名唯一)
+          HASH=$(git rev-parse --short HEAD)
+          echo "Using build hash: $HASH"
+
+          # 遍历所有关键资源文件并重命名
+          for f in *.pck *.wasm *.js; do
+            [ -f "$f" ] || continue
+            EXT="${f##*.}"
+            BASE="${f%.*}"
+            NEW="${BASE}.${HASH}.${EXT}"
+            mv "$f" "$NEW"
+            # 替换 HTML 中的引用路径
+            sed -i "s|$f|$NEW|g" index.html
+          done
+
+          # 可选: 在页面底部显示当前构建版本信息 (方便确认加载的是新版本)
+          sed -i "s|</body>|<p style='position:fixed;bottom:4px;right:8px;font-size:12px;color:#999;'>Build $HASH</p></body>|" index.html
+
+          # 输出确认日志
+          echo "Updated index.html with hash $HASH"
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: web
           path: build/web
+
       - name: Install rsync 📚
         run: |
           apt-get update && apt-get install -y rsync
+
+      # 👇 Deploy step remains unchanged — 将构建好的 Web 导出内容部署到 gh-pages 分支
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
           branch: gh-pages # The branch the action should deploy to.
           folder: build/web # The folder the action should deploy.
+          clean: true                    # ✅ 每次部署前清空 gh-pages 分支旧内容
 
   # export-mac:
   #   name: Mac Export
