@@ -96,33 +96,40 @@ jobs:
           HASH=$(git rev-parse --short HEAD)
           echo "Using build hash: $HASH"
 
-          # 识别文件
+          # 查找 Godot 导出文件
           WASM_FILE=$(ls *.wasm)
           PCK_FILE=$(ls *.pck)
-          JS_FILE=$(ls *.js | grep -vE "godot.*\.js")  # 排除 runtime 脚本
+          MAIN_JS="index.js"  # ✅ 主入口脚本
+          echo "Detected files: $WASM_FILE, $PCK_FILE, $MAIN_JS"
 
-          # 新文件名
+          # 新文件名（加哈希）
           WASM_NEW="${WASM_FILE%.*}.${HASH}.wasm"
           PCK_NEW="${PCK_FILE%.*}.${HASH}.pck"
-          JS_NEW="${JS_FILE%.*}.${HASH}.js"
+          JS_NEW="${MAIN_JS%.*}.${HASH}.js"
 
-          # 重命名文件
+          # 重命名主要文件
           mv "$WASM_FILE" "$WASM_NEW"
           mv "$PCK_FILE" "$PCK_NEW"
-          mv "$JS_FILE" "$JS_NEW"
+          mv "$MAIN_JS" "$JS_NEW"
 
-          # 更新 index.html 引用
-          sed -i "s|$JS_FILE|$JS_NEW|g" index.html
+          # ✅ 更新 index.html 中引用
+          sed -i "s|$MAIN_JS|$JS_NEW|g" index.html
           sed -i "s|$WASM_FILE|$WASM_NEW|g" index.html
           sed -i "s|$PCK_FILE|$PCK_NEW|g" index.html
 
-          # 修改导出的 JS 文件以加载带 hash 的资源
+          # ✅ 修改主 JS 文件中 Godot 引用
           sed -i "s|executable: *\"index\"|executable: \"${WASM_NEW%.*}\"|g" "$JS_NEW"
           sed -i "s|mainPack: *\"index.pck\"|mainPack: \"${PCK_NEW}\"|g" "$JS_NEW"
 
-          # 可选：在 HTML 页底部显示构建版本号
+          # ✅ 其他 JS 文件保持原样
+          echo "Other JS files kept unmodified:"
+          ls *.js | grep -v "$JS_NEW"
+
+          # ✅ 在 HTML 底部显示构建版本
           sed -i "s|</body>|<p style='position:fixed;bottom:4px;right:8px;font-size:12px;color:#999;'>Build $HASH</p></body>|" index.html
+
           echo "✔ Updated index.html and $JS_NEW for hash versioning"
+
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
