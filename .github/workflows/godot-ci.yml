@@ -94,35 +94,42 @@ jobs:
           cd build/web
 
           git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
-          # 获取提交哈希
           HASH=$(git rev-parse --short HEAD)
           BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           echo "Using build hash: $HASH"
 
-          # 文件识别
+          # 查找文件
           WASM_FILE=$(ls *.wasm)
           PCK_FILE=$(ls *.pck)
-          MAIN_JS="index.js"
 
+          # JS 文件列表
+          JS_FILES=$(ls *.js)
+
+          # 新文件名
           WASM_NEW="${WASM_FILE%.*}.${HASH}.wasm"
           PCK_NEW="${PCK_FILE%.*}.${HASH}.pck"
-          JS_NEW="${MAIN_JS%.*}.${HASH}.js"
 
-          # 重命名
           mv "$WASM_FILE" "$WASM_NEW"
           mv "$PCK_FILE" "$PCK_NEW"
-          mv "$MAIN_JS" "$JS_NEW"
 
-          # 更新 HTML
-          sed -i "s|$MAIN_JS|$JS_NEW|g" index.html
+          # 更新 HTML 引用（包括 wasm / pck）
           sed -i "s|$WASM_FILE|$WASM_NEW|g" index.html
           sed -i "s|$PCK_FILE|$PCK_NEW|g" index.html
           sed -i "s|\"executable\":\"index\"|\"executable\":\"index.${HASH}\"|g" index.html
 
-          # # ✅ 直接替换 JS 中的配置
-          # sed -i -E "s|(\"executable\" *: *\")index\"|\1index.${HASH}\"|g" "$JS_NEW"
-          # sed -i "s|\"index\\.pck\"|\"index.${HASH}.pck\"|g" "$JS_NEW"
-          # sed -i "s|\"index\\.wasm\"|\"index.${HASH}.wasm\"|g" "$JS_NEW"
+          # 🔄 处理所有 JS 文件
+          for JS in $JS_FILES; do
+            JS_NEW="${JS%.*}.${HASH}.js"
+            mv "$JS" "$JS_NEW"
+
+            # 替换 HTML 中的引用
+            sed -i "s|$JS|$JS_NEW|g" index.html
+
+            # 替换其他 JS 文件中的引用
+            for OTHER_JS in $(ls *.${HASH}.js); do
+              sed -i "s|$JS|$JS_NEW|g" "$OTHER_JS"
+            done
+          done
 
           # ✅ 写入版本文件
           cat <<EOF > version.json
@@ -160,10 +167,11 @@ jobs:
             { print }
           ' index.html > index.tmp && mv index.tmp index.html
 
-          # ✅ 在底部显示版本
+          # ✅ 显示版本信息
           sed -i "s|</body>|<p style='position:fixed;bottom:4px;right:8px;font-size:12px;color:#999;'>Build ${HASH}</p></body>|" index.html
 
           echo "✔ All replacements done successfully"
+
 
 
 
