@@ -1,6 +1,6 @@
 {
-    // "godotTools.editorPath.godot4": "/home/kevin/app/godot4.5/Godot_v4.5.1-stable_linux.x86_64",
-    "godotTools.editorPath.godot4": "D:\\Program Files\\Godot\\4.5\\Godot_v4.5.1-stable_win64.exe",
+    "godotTools.editorPath.godot4": "/home/kevin/app/godot4.5/Godot_v4.5.1-stable_linux.x86_64",
+    // "godotTools.editorPath.godot4": "D:\\Program Files\\Godot\\4.5\\Godot_v4.5.1-stable_win64.exe",
     "files.exclude": {
         "**/*.uid": true, 
         "**/*.import": true
