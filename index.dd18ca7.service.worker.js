@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1762583067|4774601';
+const CACHE_VERSION = '1762588981|4643292';
 /** @type {string} */
 const CACHE_PREFIX = 'godot_shader_dem-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
@@ -14,7 +14,7 @@ const OFFLINE_URL = 'index.offline.html';
 const ENSURE_CROSSORIGIN_ISOLATION_HEADERS = true;
 // Files that will be cached on load.
 /** @type {string[]} */
-const CACHED_FILES = ["index.html","index.js","index.offline.html","index.icon.png","index.apple-touch-icon.png","index.audio.worklet.js","index.audio.position.worklet.js"];
+const CACHED_FILES = ["index.html","index.dd18ca7.js","index.offline.html","index.icon.png","index.apple-touch-icon.png","index.dd18ca7.audio.worklet.js","index.dd18ca7.audio.position.worklet.js"];
 // Files that we might not want the user to preload, and will only be cached on first load.
 /** @type {string[]} */
 const CACHEABLE_FILES = ["index.wasm","index.pck"];
