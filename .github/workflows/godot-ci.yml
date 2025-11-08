@@ -94,7 +94,6 @@ jobs:
           cd build/web
 
           git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
-
           HASH=$(git rev-parse --short HEAD)
           BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           echo "Using build hash: $HASH"
@@ -115,14 +114,37 @@ jobs:
           sed -i "s|$WASM_FILE|$WASM_NEW|g" index.html
           sed -i "s|$PCK_FILE|$PCK_NEW|g" index.html
 
-          # ✅ 用 perl 修改 GODOT_CONFIG（跨行匹配 JSON）
-          perl -0777 -pi -e 's/"executable"\s*:\s*"index"/"executable":"index.'"${HASH}"'"/' "$JS_NEW"
-          perl -0777 -pi -e 's/"fileSizes":\{[^\}]*\}/"fileSizes":{"index.'"${HASH}"'.pck":3958704,"index.'"${HASH}"'.wasm":38034280}/' "$JS_NEW"
+          # ✅ 用 Node.js 稳定修改 GODOT_CONFIG
+          node - <<'EOF'
+          const fs = require("fs");
+          const path = "./index.${HASH}.js".replace("${HASH}", process.env.HASH);
+          let text = fs.readFileSync(path, "utf8");
 
-          # 如果想让 mainPack 一并更新，可以加入：
-          perl -0777 -pi -e 's|"mainPack"\s*:\s*"index.pck"|"mainPack":"index.'"${HASH}"'.pck"|' "$JS_NEW"
+          // 捕获 GODOT_CONFIG = {...};
+          const match = text.match(/const GODOT_CONFIG\s*=\s*(\{.*?\});/s);
+          if (!match) {
+            console.error("❌ GODOT_CONFIG not found in JS file");
+            process.exit(1);
+          }
 
-          # ✅ 写入 version.json
+          const config = JSON.parse(match[1]);
+          config.executable = `index.${process.env.HASH}`;
+          const pckKey = Object.keys(config.fileSizes).find(k => k.endsWith(".pck"));
+          const wasmKey = Object.keys(config.fileSizes).find(k => k.endsWith(".wasm"));
+          const pckSize = config.fileSizes[pckKey];
+          const wasmSize = config.fileSizes[wasmKey];
+          config.fileSizes = {};
+          config.fileSizes[`index.${process.env.HASH}.pck`] = pckSize;
+          config.fileSizes[`index.${process.env.HASH}.wasm`] = wasmSize;
+
+          // 替换回 JS 文件
+          const newText = text.replace(/const GODOT_CONFIG\s*=\s*\{.*?\};/s,
+            `const GODOT_CONFIG = ${JSON.stringify(config)};`);
+          fs.writeFileSync(path, newText, "utf8");
+          console.log("✔ GODOT_CONFIG updated successfully");
+          EOF
+
+          # ✅ version.json
           cat <<EOF > version.json
           {
             "version": "${HASH}",
@@ -132,7 +154,7 @@ jobs:
           }
           EOF
 
-          # ✅ 注入自动检测逻辑（版本刷新）
+          # ✅ 自动版本检测
           awk '
             /<\/body>/ && inserted==0 {
               print "<script>";
@@ -159,6 +181,7 @@ jobs:
           ' index.html > index.tmp && mv index.tmp index.html
 
           sed -i "s|</body>|<p style='position:fixed;bottom:4px;right:8px;font-size:12px;color:#999;'>Build ${HASH}</p></body>|" index.html
+
 
       # -----------------------------
       # 📦 上传构建产物
