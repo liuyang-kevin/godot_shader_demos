@@ -65,7 +65,7 @@ jobs:
 
   export-web:
     name: Web Export
-    runs-on: ubuntu-22.04  # Use 22.04 with godot 4
+    runs-on: ubuntu-22.04 # Use 22.04 with godot 4
     container:
       image: barichello/godot-ci:4.5.1
     steps:
@@ -93,15 +93,12 @@ jobs:
         run: |
           cd build/web
 
-          # 允许 Git 在 CI 容器中读取仓库信息 (避免 safe.directory 错误)
           git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
 
-          # 获取构建信息
           HASH=$(git rev-parse --short HEAD)
           BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           echo "Using build hash: $HASH"
 
-          # 查找 Godot 导出的主要文件
           WASM_FILE=$(ls *.wasm)
           PCK_FILE=$(ls *.pck)
           MAIN_JS="index.js"
@@ -110,22 +107,22 @@ jobs:
           PCK_NEW="${PCK_FILE%.*}.${HASH}.pck"
           JS_NEW="${MAIN_JS%.*}.${HASH}.js"
 
-          # 重命名资源文件
           mv "$WASM_FILE" "$WASM_NEW"
           mv "$PCK_FILE" "$PCK_NEW"
           mv "$MAIN_JS" "$JS_NEW"
 
-          # 更新 index.html 的引用
           sed -i "s|$MAIN_JS|$JS_NEW|g" index.html
           sed -i "s|$WASM_FILE|$WASM_NEW|g" index.html
           sed -i "s|$PCK_FILE|$PCK_NEW|g" index.html
 
-          # 修正 index.<hash>.js 中 GODOT_CONFIG 的字段 (核心逻辑)
-          sed -i "s|\"executable\":\"index\"|\"executable\":\"index.${HASH}\"|g" "$JS_NEW"
-          sed -i "s|index\\.[a-z0-9]*\\.wasm|index.${HASH}.wasm|g" "$JS_NEW"
-          sed -i "s|index\\.[a-z0-9]*\\.pck|index.${HASH}.pck|g" "$JS_NEW"
+          # ✅ 用 perl 修改 GODOT_CONFIG（跨行匹配 JSON）
+          perl -0777 -pi -e 's/"executable"\s*:\s*"index"/"executable":"index.'"${HASH}"'"/' "$JS_NEW"
+          perl -0777 -pi -e 's/"fileSizes":\{[^\}]*\}/"fileSizes":{"index.'"${HASH}"'.pck":3958704,"index.'"${HASH}"'.wasm":38034280}/' "$JS_NEW"
 
-          # 生成 version.json 文件, 供前端检测更新
+          # 如果想让 mainPack 一并更新，可以加入：
+          perl -0777 -pi -e 's|"mainPack"\s*:\s*"index.pck"|"mainPack":"index.'"${HASH}"'.pck"|' "$JS_NEW"
+
+          # ✅ 写入 version.json
           cat <<EOF > version.json
           {
             "version": "${HASH}",
@@ -135,8 +132,7 @@ jobs:
           }
           EOF
 
-          # 在 index.html 注入自动检测版本脚本
-          # 每 30 秒检查一次 version.json, 若版本不同则自动刷新
+          # ✅ 注入自动检测逻辑（版本刷新）
           awk '
             /<\/body>/ && inserted==0 {
               print "<script>";
@@ -162,10 +158,7 @@ jobs:
             { print }
           ' index.html > index.tmp && mv index.tmp index.html
 
-          # 在页面底部显示构建版本号 (可选)
           sed -i "s|</body>|<p style='position:fixed;bottom:4px;right:8px;font-size:12px;color:#999;'>Build ${HASH}</p></body>|" index.html
-
-          echo "✔ Added hash, version.json, and version check script."
 
       # -----------------------------
       # 📦 上传构建产物
@@ -186,9 +179,10 @@ jobs:
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          branch: gh-pages  # The branch the action should deploy to.
+          branch: gh-pages # The branch the action should deploy to.
           folder: build/web # The folder the action should deploy.
-          clean: true       # 清空旧文件，防止多版本残留
+          clean: true # 清空旧文件，防止多版本残留
+
 
   # export-mac:
   #   name: Mac Export
