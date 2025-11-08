@@ -119,7 +119,8 @@ jobs:
           sed -i "s|$PCK_FILE|$PCK_NEW|g" index.html
 
           # ✅ 直接替换 JS 中的配置
-          sed -i "s|\"executable\":\"index\"|\"executable\":\"index.${HASH}\"|g" "$JS_NEW"
+          sed -i -E "s|(\"executable\" *: *\")index\"|\1index.${HASH}\"|g" "$JS_NEW"
+          # sed -i "s|\"executable\":\"index\"|\"executable\":\"index.${HASH}\"|g" "$JS_NEW"
           sed -i "s|\"index\\.pck\"|\"index.${HASH}.pck\"|g" "$JS_NEW"
           sed -i "s|\"index\\.wasm\"|\"index.${HASH}.wasm\"|g" "$JS_NEW"
 
