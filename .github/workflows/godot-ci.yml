@@ -93,6 +93,7 @@ jobs:
         run: |
           cd build/web
 
+          git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
           # 获取提交哈希
           HASH=$(git rev-parse --short HEAD)
           BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
