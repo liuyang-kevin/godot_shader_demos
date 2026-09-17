@@ -232,10 +232,11 @@ func _on_btn闪卡效果_pressed():
 	#_pop_doc_path("res://docs/精灵阴影.md")
 
 
-func _on_btn_vfx_lib_pressed() -> void:
-	_invisibleAllShaderContainer()
-	is_subviewport_focused = true # 拦截UI操作锁
-	sub_viewport_container.visible = true # 显示SubViewportContainer
-	# 加载并显示精灵拖影场景
-	_show_sub_scene("res://addons/vfx_library/demo/vfx_demo.tscn")
-	_pop_doc_path("res://addons/vfx_library/demo/README.md")
+## 打开 VFX Shader 画廊（shaders/vfx 下两类 shader 的集中演示）
+func _on_btn_vfx_gallery_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/examples/VFX_Shader_Gallery/vfx_shader_gallery.tscn")
+
+
+## 打开粒子特效展示（从 vfx_library 移植的 30 个粒子特效铺在路面上）
+func _on_btn_particles_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/examples/粒子特效展示/粒子特效展示.tscn")

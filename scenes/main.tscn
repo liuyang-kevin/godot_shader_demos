@@ -134,9 +134,14 @@ text = "3D"
 layout_mode = 2
 text = "Goto 3D"
 
-[node name="BtnVFXLib" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
+[node name="BtnParticles" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
 layout_mode = 2
-text = "vfx_library demos"
+text = "粒子特效展示"
+autowrap_mode = 3
+
+[node name="BtnVFXGallery" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
+layout_mode = 2
+text = "VFX Shader 画廊"
 autowrap_mode = 3
 
 [node name="BtnInvisibleAll" type="Button" parent="Control/ScrollContainer/HFlowContainer"]
@@ -208,5 +213,6 @@ stretch_mode = 5
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn精灵阴影" to="." method="_on_btn精灵阴影_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/Btn3D" to="." method="_on_btn_3d_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/BtnGoto3D" to="." method="_on_goto3d_button_pressed"]
-[connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/BtnVFXLib" to="." method="_on_btn_vfx_lib_pressed"]
+[connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/BtnParticles" to="." method="_on_btn_particles_pressed"]
 [connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/BtnInvisibleAll" to="." method="_invisibleAllShaderContainer"]
+[connection signal="pressed" from="Control/ScrollContainer/HFlowContainer/BtnVFXGallery" to="." method="_on_btn_vfx_gallery_pressed"]
